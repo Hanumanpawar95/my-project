@@ -19,7 +19,16 @@ function checkResult() {
       if (definition === undefined) {
         output.innerHTML = '<hr>There is no information about this learner.<hr>';
       } else {
-        output.innerHTML = '<hr> BS-CIT Score is ' + definition['BS-CIT'] + ' <hr> BS-CLS Score is ' + definition['BS-CLS'] + ' <hr> BS-CSS Score is ' + definition['BS-CSS'] + ' <hr>';
+        var bsCitScore = parseInt(definition['BS-CIT']) || 0;
+        var bsClsScore = parseInt(definition['BS-CLS']) || 0;
+        var bsCssScore = parseInt(definition['BS-CSS']) || 0;
+        var totalScore = bsCitScore + bsClsScore + bsCssScore;
+        var bsCitPercentage = (bsCitScore / 100) * 100;
+        var bsClsPercentage = (bsClsScore / 100) * 100;
+        var bsCssPercentage = (bsCssScore / 100) * 100;
+        var totalPercentage = (totalScore / 300) * 100;
+
+        output.innerHTML = '<hr>Name: <span class="blinking-text">' + definition['Name'] + '</span><hr>BS-CIT Score: ' + bsCitScore + ' out of 100 (' + bsCitPercentage + '%)<hr>BS-CLS Score: ' + bsClsScore + ' out of 100 (' + bsClsPercentage + '%)<hr>BS-CSS Score: ' + bsCssScore + ' out of 100 (' + bsCssPercentage + '%)<hr>Total Score: ' + totalScore + ' out of 300 (' + totalPercentage + '%)<hr>Thanks for connecting with Beed Cyber Infotech KYP Center<hr>';
       }
     }
   });
