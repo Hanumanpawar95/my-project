@@ -1,83 +1,139 @@
 function checkResult() {
-  var learnerCode = document.getElementById('studentName').value;
-  var input = learnerCode.toUpperCase();
-  var output = document.getElementById("output");
+      var learnerCode = document.getElementById('studentName').value;
+      var input = learnerCode.toUpperCase();
+      var output = document.getElementById('output');
 
-  // Replace 'studentName.csv' with the path or URL of your CSV file
-  var csvFile = 'studentName.csv';
+      // Replace 'studentName.csv' with the path or URL of your CSV file
+      var csvFile = 'studentName.csv';
 
-  Papa.parse(csvFile, {
-    download: true,
-    header: true,
-    complete: function(results) {
-      var parsedData = results.data;
-      var definition = parsedData.find(function(student) {
-        // Replace 'Learner Code' with the column name that contains the learner codes
-        return student && student['Learner Code'] && student['Learner Code'].toUpperCase() === input;
+      Papa.parse(csvFile, {
+        download: true,
+        header: true,
+        complete: function (results) {
+          var parsedData = results.data;
+          var definition = parsedData.find(function (student) {
+            // Replace 'Learner Code' with the column name that contains the learner codes
+            return (
+              student &&
+              student['Learner Code'] &&
+              student['Learner Code'].toUpperCase() === input
+            );
+          });
+
+          if (definition === undefined) {
+            output.innerHTML =
+              '<hr>There is no information about this learner.<hr>';
+          } else {
+            var bsCitScore = parseFloat(definition['BS-CIT']) || 0;
+            var bsClsScore = parseFloat(definition['BS-CLS']) || 0;
+            var bsCssScore = parseFloat(definition['BS-CSS']) || 0;
+            var totalScore = bsCitScore + bsClsScore + bsCssScore;
+            var bsCitPercentage = (bsCitScore / 100) * 100;
+            var bsClsPercentage = (bsClsScore / 100) * 100;
+            var bsCssPercentage = (bsCssScore / 100) * 100;
+            var totalPercentage = (totalScore / 300) * 100;
+
+            output.innerHTML =
+              '<hr>Name: <span class="blinking-text">' +
+              definition['Name'] +
+              '</span><hr>Result: ' +
+              definition['Result'] +
+              '<hr>BS-CIT Score: ' +
+              bsCitScore +
+              ' out of 100 (' +
+              bsCitPercentage.toFixed(2) +
+              '%)<hr>BS-CLS Score: ' +
+              bsClsScore +
+              ' out of 100 (' +
+              bsClsPercentage.toFixed(2) +
+              '%)<hr>BS-CSS Score: ' +
+              bsCssScore +
+              ' out of 100 (' +
+              bsCssPercentage.toFixed(2) +
+              '%)<hr>Total Score: ' +
+              totalScore +
+              ' out of 300 (' +
+              totalPercentage.toFixed(2) +
+              '%)<hr>Thanks for connecting with Beed Cyber Infotech KYP Center<hr>';
+
+            // Create the downloadButton dynamically
+            var downloadButton = document.createElement('input');
+            downloadButton.setAttribute('type', 'button');
+            downloadButton.setAttribute('id', 'downloadButton');
+            downloadButton.setAttribute('value', 'Download PDF');
+            downloadButton.setAttribute('onclick', 'downloadResult()');
+            output.appendChild(downloadButton);
+          }
+        },
       });
-
-      if (definition === undefined) {
-        output.innerHTML = '<hr>There is no information about this learner.<hr>';
-      } else {
-        var bsCitScore = parseFloat(definition['BS-CIT']) || 0;
-        var bsClsScore = parseFloat(definition['BS-CLS']) || 0;
-        var bsCssScore = parseFloat(definition['BS-CSS']) || 0;
-        var totalScore = bsCitScore + bsClsScore + bsCssScore;
-        var bsCitPercentage = (bsCitScore / 100) * 100;
-        var bsClsPercentage = (bsClsScore / 100) * 100;
-        var bsCssPercentage = (bsCssScore / 100) * 100;
-        var totalPercentage = (totalScore / 300) * 100;
-
-        output.innerHTML = '<hr>Name: <span class="blinking-text">' + definition['Name'] + '</span><hr>Result: ' + definition['Result'] + '<hr>BS-CIT Score: ' + bsCitScore + ' out of 100 (' + bsCitPercentage.toFixed(2) + '%)<hr>BS-CLS Score: ' + bsClsScore + ' out of 100 (' + bsClsPercentage.toFixed(2) + '%)<hr>BS-CSS Score: ' + bsCssScore + ' out of 100 (' + bsCssPercentage.toFixed(2) + '%)<hr>Total Score: ' + totalScore + ' out of 300 (' + totalPercentage.toFixed(2) + '%)<hr>Thanks for connecting with Beed Cyber Infotech KYP Center<hr>';
-
-        // Add a print button dynamically
-        var printButton = document.createElement('input');
-        printButton.setAttribute('type', 'button');
-        printButton.setAttribute('value', 'Print Result');
-        printButton.setAttribute('onclick', 'printResult()');
-        output.appendChild(printButton);
-      }
     }
-  });
-}
-
-function printResult() {
+function downloadResult() {
   var outputResult = document.getElementById('output').innerHTML;
-  var printWindow = window.open('', '', 'width=800,height=600');
-  printWindow.document.write('<html><head><title>Print Result</title></head><body>');
-  printWindow.document.write(outputResult);
-  printWindow.document.write('</body></html>');
-  printWindow.document.close();
 
-  printWindow.onload = function() {
-    printWindow.print();
-    printWindow.onafterprint = function() {
-      printWindow.close();
-    };
-  };
-}
- function printResult() {
-  var outputResult = document.getElementById('output').innerHTML;
-  var printWindow = window.open('', '', 'width=800,height=600');
-  printWindow.document.write('<html><head><title>Print Result</title>');
+  // Convert the download button to an image
+  var downloadButton = document.getElementById('downloadButton');
+  if (downloadButton) {
+    var buttonImage = new Image();
+    buttonImage.src = 'data:image/svg+xml;base64,' + window.btoa(downloadButton.outerHTML);
 
-  // Get the styles from the <style> section in the original HTML
-  var styleElements = document.getElementsByTagName('style');
-  for (var i = 0; i < styleElements.length; i++) {
-    var styleElement = styleElements[i];
-    printWindow.document.write(styleElement.outerHTML);
+    // Replace the download button element with the button image in the output HTML
+    outputResult = outputResult.replace(downloadButton.outerHTML, buttonImage.outerHTML);
   }
 
-  printWindow.document.write('</head><body>');
-  printWindow.document.write(outputResult);
-  printWindow.document.write('</body></html>');
-  printWindow.document.close();
+  // Create a container element for the output HTML and disclaimer
+  var container = document.createElement('div');
 
-  printWindow.onload = function() {
-    printWindow.print();
-    printWindow.onafterprint = function() {
-      printWindow.close();
-    };
-  };
+  // Add the image to the container
+  var image = new Image();
+  image.src = 'data:image/png;base64,' + getImageBase64(); // Replace with the Base64 data of your image
+  image.style.display = 'block';
+  image.style.margin = '0 auto 12px'; // Add margin below the image
+  container.appendChild(image);
+
+  // Add the heading to the container
+  var heading = document.createElement('h1');
+  heading.innerText = 'KYP Final Exam Result';
+  heading.style.textAlign = 'center';
+  container.appendChild(heading);
+
+  // Add the output HTML to the container
+  var output = document.createElement('div');
+  output.innerHTML = outputResult;
+  container.appendChild(output);
+
+  // Add the disclaimer as a separate element at the bottom of the container
+  var disclaimer = document.createElement('p');
+  disclaimer.innerHTML = "<strong>DISCLAIMER:</strong> Although every effort has been made to ensure the accuracy of the information, <strong>Beed Cyber Infotech</strong> is not responsible for any inadvertent error that may have crept in the data being published online. The data published herewith is valid only for online verification of the statement of marks.";
+  disclaimer.style.fontWeight = "bold"; // Set font weight to bold
+  disclaimer.style.color = "red"; // Set text color to red
+  container.appendChild(disclaimer);
+
+  var note = document.createElement('p');
+  note.innerHTML = "<strong>Note:</strong> For more details, contact your center.";
+  note.style.fontStyle = "italic"; // Set font style to italic
+  container.appendChild(note);
+
+  // Convert the container HTML to PDF
+  html2pdf()
+    .set({
+      filename: 'result.pdf',
+      margin: [12, 12, 12, 12],
+      pagebreak: { mode: 'avoid-all' },
+      html2canvas: { scale: 2 },
+      jsPDF: { format: 'a4', orientation: 'portrait' },
+    })
+    .from(container)
+    .save();
 }
 
+// Function to get the Base64 data of the image
+function getImageBase64() {
+  // Replace with your logic to convert the image to Base64 data
+  // Example using canvas:
+  var canvas = document.createElement('canvas');
+  var ctx = canvas.getContext('2d');
+  var image = new Image();
+  image.src = "image.png"; // Replace with the path to your image
+  ctx.drawImage(image, 0, 0);
+  return canvas.toDataURL('image/png').split(',')[1];
+}
