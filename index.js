@@ -84,13 +84,13 @@ function downloadResult() {
   var container = document.createElement('div');
 
   // Add the image to the container
-  var image = new Image();
-  image.src = 'data:image/png;base64,' + getImageBase64(); // Replace with the Base64 data of your image
-  image.style.display = 'block';
-  image.style.margin = '0 auto 12px'; // Add margin below the image
-  container.appendChild(image);
-
-  // Add the heading to the container
+  // Add the image to the container
+var image = new Image();
+image.src = "image.png"; // Relative path to the image from the HTML file
+image.style.display = 'block';
+image.style.margin = '0 auto 12px'; // Add margin below the image
+container.appendChild(image);
+ // Add the heading to the container
   var heading = document.createElement('h1');
   heading.innerText = 'KYP Final Exam Result';
   heading.style.textAlign = 'center';
@@ -123,17 +123,12 @@ function downloadResult() {
       jsPDF: { format: 'a4', orientation: 'portrait' },
     })
     .from(container)
-    .save();
-}
-
-// Function to get the Base64 data of the image
-function getImageBase64() {
-  // Replace with your logic to convert the image to Base64 data
-  // Example using canvas:
-  var canvas = document.createElement('canvas');
-  var ctx = canvas.getContext('2d');
-  var image = new Image();
-  image.src = "image.png"; // Replace with the path to your image
-  ctx.drawImage(image, 0, 0);
-  return canvas.toDataURL('image/png').split(',')[1];
+    .outputPdf('dataurlstring')
+    .then(function (pdfString) {
+      // Create a temporary anchor element
+      var downloadLink = document.createElement('a');
+      downloadLink.href = pdfString;
+      downloadLink.download = 'result.pdf';
+      downloadLink.click();
+    });
 }
