@@ -29,7 +29,55 @@ function checkResult() {
         var totalPercentage = (totalScore / 300) * 100;
 
         output.innerHTML = '<hr>Name: <span class="blinking-text">' + definition['Name'] + '</span><hr>Result: ' + definition['Result'] + '<hr>BS-CIT Score: ' + bsCitScore + ' out of 100 (' + bsCitPercentage.toFixed(2) + '%)<hr>BS-CLS Score: ' + bsClsScore + ' out of 100 (' + bsClsPercentage.toFixed(2) + '%)<hr>BS-CSS Score: ' + bsCssScore + ' out of 100 (' + bsCssPercentage.toFixed(2) + '%)<hr>Total Score: ' + totalScore + ' out of 300 (' + totalPercentage.toFixed(2) + '%)<hr>Thanks for connecting with Beed Cyber Infotech KYP Center<hr>';
+
+        // Add a print button dynamically
+        var printButton = document.createElement('input');
+        printButton.setAttribute('type', 'button');
+        printButton.setAttribute('value', 'Print Result');
+        printButton.setAttribute('onclick', 'printResult()');
+        output.appendChild(printButton);
       }
     }
   });
 }
+
+function printResult() {
+  var outputResult = document.getElementById('output').innerHTML;
+  var printWindow = window.open('', '', 'width=800,height=600');
+  printWindow.document.write('<html><head><title>Print Result</title></head><body>');
+  printWindow.document.write(outputResult);
+  printWindow.document.write('</body></html>');
+  printWindow.document.close();
+
+  printWindow.onload = function() {
+    printWindow.print();
+    printWindow.onafterprint = function() {
+      printWindow.close();
+    };
+  };
+}
+ function printResult() {
+  var outputResult = document.getElementById('output').innerHTML;
+  var printWindow = window.open('', '', 'width=800,height=600');
+  printWindow.document.write('<html><head><title>Print Result</title>');
+
+  // Get the styles from the <style> section in the original HTML
+  var styleElements = document.getElementsByTagName('style');
+  for (var i = 0; i < styleElements.length; i++) {
+    var styleElement = styleElements[i];
+    printWindow.document.write(styleElement.outerHTML);
+  }
+
+  printWindow.document.write('</head><body>');
+  printWindow.document.write(outputResult);
+  printWindow.document.write('</body></html>');
+  printWindow.document.close();
+
+  printWindow.onload = function() {
+    printWindow.print();
+    printWindow.onafterprint = function() {
+      printWindow.close();
+    };
+  };
+}
+
