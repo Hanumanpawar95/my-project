@@ -86,7 +86,7 @@ function downloadResult() {
   // Add the image to the container
   // Add the image to the container
 var image = new Image();
-image.src = "image.png"; // Relative path to the image from the HTML file
+image.src = "image.jpeg"; // Relative path to the image from the HTML file
 image.style.display = 'block';
 image.style.margin = '0 auto 12px'; // Add margin below the image
 container.appendChild(image);
